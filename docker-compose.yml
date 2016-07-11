@@ -1,0 +1,36 @@
+version: '2'
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    networks:
+      - back
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+  wordpress:
+    image: wordpress:4.5
+    restart: always
+    networks:
+      - back
+      - front
+    volumes:
+      - wordpress:/var/www/html
+    environment:
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - LETSENCRYPT_HOST=${VIRTUAL_HOST}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - WORDPRESS_DB_HOST=mysql
+      - WORDPRESS_DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+volumes:
+  wordpress:
+  db:
+
+networks:
+  back:
+  front:
+    external:
+      name: ${FRONT_NETWORK}
